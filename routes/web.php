@@ -18,4 +18,4 @@ Route::get('/', function () {
 });
 Route::resource('Posts','PostController');
 Route::resource('Vehicles','VehicleController');
-Route::resource('Tags','TagController');
+Route::resource('Tags','TagController');Route::resource('Images','ImageController');

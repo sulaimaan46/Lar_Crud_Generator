@@ -1,0 +1,11 @@
+{
+    "name": "hp/crud",
+    "description": "Crud Generator",
+    "authors": [
+        {
+            "name": "sulai46",
+            "email": "sulaiman@sparkouttech.com"
+        }
+    ],
+    "require": {}
+}

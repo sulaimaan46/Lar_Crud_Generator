@@ -1,10 +1,10 @@
 <?php
 
-namespace {{packagePath}}\Requests;
+namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class {{modelName}}Request extends FormRequest
+class ImageRequest extends FormRequest
 {
     public function authorize()
     {

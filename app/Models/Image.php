@@ -1,11 +1,11 @@
 
 <?php
 
-namespace {{packagePath}}\Models;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class {{modelName}} extends Model
+class Image extends Model
 {
     protected $guarded = ['id'];
 }

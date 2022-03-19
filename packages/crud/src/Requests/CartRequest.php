@@ -1,10 +1,10 @@
 <?php
 
-namespace {{packagePath}}\Requests;
+namespace HP\CrudGenrator\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class {{modelName}}Request extends FormRequest
+class CartRequest extends FormRequest
 {
     public function authorize()
     {

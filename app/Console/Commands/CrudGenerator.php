@@ -16,7 +16,7 @@ class CrudGenerator extends Command
      *
      * @var string
      */
-    protected $signature = 'crud:generator {name : Class (singular) for example User}';
+    protected $signature = 'crud:generator {name : Class (singular) for example User} {api: yes or no}';
 
     /**
      * The console command description.
@@ -43,13 +43,31 @@ class CrudGenerator extends Command
     public function handle()
     {
         $name = $this->argument('name');
+        $api = $this->argument('api');
 
         $this->model($name);
         $this->controller($name);
         $this->request($name);
 
-        File::append(base_path('routes/web.php'),'Route::resource(\''.Str::plural($name)."','{$name}Controller');");
-        File::append(base_path('routes/api.php'),'Route::resource(\''.Str::plural($name)."','{$name}Controller');");
+        if(!file_exists($modelPath = base_path("packages/crud/src/routes"))){
+            mkdir($modelPath,0777,true);
+        }
+
+        if($api == 'yes'){
+            File::put(base_path('packages/crud/src/routes/').'api.php',
+                '<?php
+                use Illuminate\Support\Facades\Route;
+
+                Route::resource(\''.Str::plural($name)."','{$name}Controller');"
+            );
+        }
+
+        File::put(base_path('packages/crud/src/routes/').'web.php',
+                '<?php
+                use Illuminate\Support\Facades\Route;
+
+                Route::resource(\''.Str::plural($name)."','{$name}Controller');"
+        );
 
         Artisan::call('make:migration create_'.strtolower(Str::plural($name)).'_table --create='.strtolower(Str::plural($name)));
 
@@ -68,26 +86,41 @@ class CrudGenerator extends Command
 
     protected function model($name){
         $template = str_replace(
-            ['{{modelName}}'],
-            [$name],
+            [
+                '{{modelName}}',
+                '{{packagePath}}',
+            ],
+            [
+                $name,
+                'HP\CrudGenrator'
+            ],
             $this->getStub('Model')
         );
 
-        file_put_contents(app_path("/Models/{$name}.php"),$template);
+        if(!file_exists($modelPath = base_path("/packages/crud/src/Models"))){
+            mkdir($modelPath,0777,true);
+        }
+        file_put_contents(base_path("/packages/crud/src/Models/{$name}.php"),$template);
+
     }
 
     protected function request($name){
         $template = str_replace(
-            ['{{modelName}}'],
-            [$name],
+            ['{{modelName}}',
+             '{{packagePath}}',
+            ],
+            [
+                $name,
+                'HP\CrudGenrator'
+            ],
             $this->getStub('Request')
         );
 
-        if(!file_exists($path = app_path('/Http/Requests'))){
-            mkdir($path,0777,true);
+        if(!file_exists($modelPath = base_path("/packages/crud/src/Requests"))){
+            mkdir($modelPath,0777,true);
         }
 
-        file_put_contents(app_path("/Http/Requests/{$name}Request.php"),$template);
+        file_put_contents(base_path("/packages/crud/src/Requests/{$name}Request.php"),$template);
     }
 
     protected function controller($name){
@@ -95,16 +128,22 @@ class CrudGenerator extends Command
             [   '{{modelName}}',
                 '{{modelNamePluralLowerCase}}',
                 '{{modelNameSingularLowerCase}}',
+                '{{packagePath}}',
             ],
             [
                 $name,  //Post
                 strtolower(Str::plural($name)),  //posts
                 strtolower($name),   //post
+                'HP\CrudGenrator'
             ],
             $this->getStub('Controller')
         );
 
-        file_put_contents(app_path("/Http/Controllers/{$name}Controller.php"),$template);
+        if(!file_exists($modelPath = base_path("/packages/crud/src/Http/Controllers"))){
+            mkdir($modelPath,0777,true);
+        }
+
+        file_put_contents(base_path("/packages/crud/src/Http/Controllers/{$name}Controller.php"),$template);
 
     }
 }
